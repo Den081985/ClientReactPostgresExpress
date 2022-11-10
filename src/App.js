@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
+import { BrowserRouter } from "react-router-dom";
+
+import AppRouter from "./components/AppRouter";
+import NavBar from "./components/NavBar";
+import { useStateContext } from "./context/stateContext";
+import { check } from "./http/userApi";
 
 function App() {
+  const { setUser } = useStateContext();
+  //состояние загрузки страницы во время пользователя
+  const [loading, setLoading] = useState(true);
+  //запрос на валидность токена пользователя отправляется один раз при загрузке приложения
+  useEffect(() => {
+    check()
+      .then((data) => {
+        setUser(data);
+        setLoading(false);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  // if (loading) {
+  //   return <Spinner animation="grow" />;
+  // }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <NavBar />
+      <AppRouter />
+    </BrowserRouter>
   );
 }
 
